@@ -1,0 +1,42 @@
+.data
+
+linha: .asciiz "\n"
+
+.text
+main:	
+	li $v0,5  #ler primeiro inteiro
+	syscall
+	move $t0,$v0 #colocar o inteiro em t0
+
+	li $v0, 5 #ler um numero para T3		
+	syscall
+	move $t3, $v0 # mover o inteiro para t3
+	
+	addi $t1, $t1,1 #acrecsentar 1 em t1
+	
+while:
+	beq $t1, $t0, saida #se o valor de t1 for igual a t0 execute o saida
+	
+	li $v0, 5 #ler um novo inteiro		
+	syscall
+	move $t2, $v0 #armazenar ele em t2
+	
+	bgt $t2, $t3, if #se t2 for maior que t3 execute o if
+	
+	blt $t2, $t3, else #se t2 for menor que t3 execute o else
+	
+	if:
+		move $t3, $t2 #armazena o valor de t2 em t3
+		
+	else:
+		move $s0, $t3
+		addi $t1,$t1,1
+		j while #executar o while novamente
+	saida:
+		li $v0,1
+		la $a0, ($s0) #imprimindo o s0
+		syscall
+		
+		li $v0, 4
+		la $a0, linha
+		syscall

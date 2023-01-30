@@ -1,0 +1,116 @@
+.data
+  newline: .asciiz "\n"
+  invalid: .asciiz "Entradas invalidas\n"
+  notPrime: .asciiz "O modulo nao eh primo\n"
+  invert: .asciiz "inverso = "
+
+.text
+
+main:
+  li $v0, 5   # le p
+  syscall
+  move $t0, $v0  # move p para t0
+  
+  li $v0, 5   # le a
+  syscall
+  move $t1, $v0  # move a para t1
+  
+  li $t2, 2  # inicializa t2=2 (aux) para calculo do primo
+
+  # verifica se sao maiores que 1
+    
+  ble $t0, 1, errorInvalid  # se p<=1, vai para error1
+  ble $t1, 1, errorInvalid  # se a<=1, vai para error1
+
+# verifica se p eh primo
+loopPrime:  
+  beq $t0, $t2, isMultiple  # se p=aux, vai para isPrime
+  div $t0, $t2      # divide p por aux
+  mfhi $t3      # move resto para reg $t3
+  beq $t3, $0, errorNotPrime  # se $t3==0, notPrime
+  addi $t2, $t2, 1    # aux++
+
+  b loopPrime
+
+# verifica se sao multiplos  
+isMultiple:  
+  bgt $t1, $t0, a_by_p    # se a>p, vai para a/p
+  
+  div $t0, $t1      # p/a
+  mfhi $t3      # salva o resto em $t3
+  bne $t3, $0, calculate    # se $t3!=0, nao sao multiplos e pode continuar
+  beqz $t3, errorInvalid    # se $t3==0,  nao pode continuar e vai para error1  
+      
+a_by_p:
+  div $t1, $t0      # a/p
+  mfhi $t3      # salva o resto em $t3
+  bne $t3, $0, calculate    # se $t3!=0, nao sao multiplos e pode continuar
+  beqz $t3, errorInvalid    # se $t3==0,  nao pode continuar e vai para error1
+  
+# entradas invalidas
+errorInvalid:       
+  li $v0, 4    # print
+  la $a0, invalid
+  syscall
+  
+  j exit       # vai para exit
+
+# p nao eh primo
+errorNotPrime:        
+  li $v0, 4    # print
+  la $a0, notPrime
+  syscall
+  
+  j exit       # vai para exit
+  
+calculate:
+
+  li $s1, 0    # y = 0
+  li $s2, 1    # x = 1
+
+  add $t5, $t0, $0  # p0 = p
+  
+loop:
+  ble $t1, 1, out    # se a <= 1, sai do loop
+  div $t1, $t0    # a/p
+  mflo $s0    # q = a/p
+  
+  add $t6, $t0, $0  # t = p
+  
+  # euclides
+  div $t1, $t0    # a/p
+  mfhi $t0    # salvando o resto em t0
+  
+  addi $t1, $t6, 0  # a = t
+  addi $t6, $s1, 0  # t = y
+  
+  mul $s4, $s0, $s1  # aux = q*y
+  sub $s1, $s2, $s4  # y = x - aux
+  
+  addi $s2, $t6, 0   # x = t
+  
+  j loop
+  
+out:   
+  bltz $s2, positive  # se x < 0, tornar x positivo
+  bgez $s2, end    # se x >= 0, finaliza
+  
+positive:
+  add $s2, $s2, $t5  # x += p0
+
+end:  
+  li $v0, 4              # print
+  la $a0, invert   
+  syscall                
+  
+  addi $a0, $s2, 0  # print valor
+  li $v0, 1
+  syscall
+  
+  li $v0, 4              # print
+  la $a0, newline   
+  syscall 
+
+exit:    
+  li $v0, 10     # exit
+  syscall

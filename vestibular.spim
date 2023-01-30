@@ -1,0 +1,67 @@
+.data
+   quebraLinha: .asciiz "\n"
+   gabarito: .space 256
+   marcadas: .space 256
+
+.text
+   main:
+   
+   li $t3, 0  #em t3 esta numero inicial = 0
+   li $t5, 0 
+   
+   li $v0, 5
+   syscall
+   move $t0, $v0   #armazenado o numero(qtdeItens) em t0
+   
+   li $v0, 8  #lendo o gabarito e salva em t1
+   la $a0, gabarito
+   la $a1, 256
+   syscall
+   move $t1, $a0
+   
+    li $v0, 8  #lendo as marcadas e salva em t7
+   la $a0, marcadas
+   la $a1, 256
+   syscall
+   move $t7, $a0
+   
+
+   
+   for:
+   
+   slt $t4, $t3, $t0   #if t3(inicio) < t2(fim), t4 =1, else t4 = 0
+   beq $t4, $zero, saida  # inicio n sendo menor que fim, saia
+   
+   add $s6, $t3, $t1
+   lb $s2, 0($s6)  #gabarito[inicio]
+   
+   add $s7, $t3, $t7
+   lb $s3, 0($s7)  #marcadas[inicio]
+   
+   beq $s2, $s3, acertos #se s2 e s3 forem diferentes (letra gabarito e letra marcada)
+   
+   sub $t2, $t2, 1  #subtrai um do final(t2) = fim - 1
+   addi $t3, $t3, 1 #adicionar 1 no inicio(t3) = inicio + 1
+   j for
+   
+   acertos:
+   addi $t5, $t5, 1 
+   sub $t2, $t2, 1  #subtrai um do final(t2) = fim - 1
+   addi $t3, $t3, 1 #adicionar 1 no inicio(t3) = inicio + 1
+   
+   j for
+   
+   saida:
+   li $v0, 1
+   move $a0, $t5
+   syscall
+   
+   li $v0, 4
+   la $a0, quebraLinha
+   syscall
+   
+   li $v0, 10
+   syscall
+   
+   
+   

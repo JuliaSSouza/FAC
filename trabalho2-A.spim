@@ -1,0 +1,140 @@
+.data
+   soma: .asciiz "ADD: "
+   subtracao: .asciiz "\nSUB: "
+   e: .asciiz "\nAND: "
+   ou: .asciiz "\nOR: "
+   xou: .asciiz "\nXOR: "
+   m: .asciiz "\nMASK: "
+   pre_esquerda: .asciiz "\nSLL("
+   esquerda: .asciiz "): "
+   pre_direita: .asciiz "\nSRL("
+   direita: .asciiz "): "
+   
+   
+.text
+    main:
+    li $v0, 5 #ler um inteiro a 
+    syscall
+    move $t0, $v0  #alocar o inteiro a em t0
+     
+    li $v0, 5 #ler um inteiro b
+    syscall
+    move $t1, $v0  #alocar o inteiro b em t1
+    
+    li $v0, 5 #ler um inteiro c
+    syscall
+    move $t6, $v0
+    
+     add $t2, $t1, $t0 #soma armazenada em t2
+     
+     li $v0, 4
+     la $a0, soma  #chmanaod a string add
+     syscall
+     
+   
+     li $v0, 1
+     move $a0, $t2  #imprimindo o t2
+     syscall
+     
+      #subtracao -------------------------- 
+     sub $t3, $t0, $t1 #subtracao no t3
+     
+     li $v0, 4
+     la $a0, subtracao  #chamando a string sub
+     syscall
+     
+     li $v0, 1
+     move $a0, $t3  #imprimindo o t3
+     syscall
+     
+     #and------------
+     and $t4, $t0, $t1 #and no t4
+     
+     li $v0, 4
+     la $a0, e #chamando a string and
+     syscall
+     
+     li $v0, 1
+     move $a0, $t4  #imprimindo o t4
+     syscall
+    
+    #or-----------
+    or $t5, $t0, $t1 #or no t5
+     
+     li $v0, 4
+     la $a0, ou #chamando a string or
+     syscall
+     
+     li $v0, 1
+     move $a0, $t5  #imprimindo o t4
+     syscall
+     
+     #xor-----------
+     xor $t7, $t0, $t1 #or no t7
+     
+     li $v0, 4
+     la $a0, xou #chamando a string xor
+     syscall
+     
+     li $v0, 1
+     move $a0, $t7 #imprimindo o t7
+     syscall
+     
+     #mask(and entre c e 31)-------------
+     li $t8, 31
+     
+     and $t7, $t6, $t8 #mask no t7
+     
+     li $v0, 4
+     la $a0, m #chamando a string mask
+     syscall
+     
+     li $v0, 1
+     move $a0, $t7 #imprimindo o t7
+     syscall
+     
+     #pre_esquerda-----------
+     li $v0, 4
+     la $a0, pre_esquerda #chamando a string sll
+     syscall
+     
+     li $v0, 1
+     move $a0, $t7 #imprimindo o t7
+     syscall
+     
+     #esquerda------------------
+     #move $s0, $t7
+     
+     sllv $t9, $t0, $t7 #or no t7
+     
+     li $v0, 4
+     la $a0, esquerda #chamando a string sll
+     syscall
+     
+     li $v0, 1
+     move $a0, $t9 #imprimindo o t7
+     syscall
+     
+      #pre_direita-----------
+     li $v0, 4
+     la $a0, pre_direita #chamando a string sll
+     syscall
+     
+     li $v0, 1
+     move $a0, $t7 #imprimindo o t7
+     syscall
+     
+     #direita------------------
+     move $s0, $t7
+     
+     srlv $t6, $t1, $s0 #or no t7
+     
+     li $v0, 4
+     la $a0, direita #chamando a string sll
+     syscall
+     
+     li $v0, 1
+     move $a0, $t6 #imprimindo o t7
+     syscall
+     
+     
